@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * moddev_exercise.module
+ */
+
+/**
+ * Implements hook_init().
+ *
+ * Runs on every page.
+ */
+function moddev_exercise_init() {
+	global $user;
+	//kpr($user);
+}
+

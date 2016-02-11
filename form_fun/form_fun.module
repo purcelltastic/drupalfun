@@ -1,0 +1,8 @@
+<?php
+
+function form_fun_menu() {
+  $items = array();
+  $items['form_fun/cake'] = array(
+    'title'
+  );
+}

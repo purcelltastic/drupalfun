@@ -1,0 +1,3 @@
+name = moddev exercise
+description = Module for running through module development exercises
+core = 7.x

@@ -1,0 +1,3 @@
+name = Menu Mangler
+description = Mangle the menu to demo the page array.
+core= 7.x
