@@ -1,0 +1,3 @@
+name = DBSelect Demo
+description = Demo of dbselect tutorial.
+core = 7.x

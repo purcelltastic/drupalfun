@@ -1,0 +1,50 @@
+<?php
+
+/*
+ * Implements hook_menu().
+ */
+function demo_falter_menu() {
+  $items = array();
+  $items['admin/config/people/passwords'] = array(
+    'title' => 'Bad Passwords List',
+    'description' => t('Configure a list of passwords that aren\'t allowed'),
+    'page callback' => 'drupal_get_form',
+    'page_arguments' => array('demo_falter_passwords_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'demo_falter_passwords_form.inc',
+  );
+  return $items;
+}
+
+/*
+ * Implements hook_form_alter().
+ */
+function demo_falter_form_alter(&$form, &$form_state, $form_id) {
+  // dpm($form_id);
+  switch($form_id) {
+    case 'user_profile_form':
+      $form['account']['pass']['#description'] = t('To change the current user password, enter the new password in both fields. Please do not use common passwords like "password", "12345", "love".');
+      // dpm($form);
+    break;
+  }
+}
+
+/*
+ * Implement hook_form_FORM_ID_alter().
+ */
+function demo_falter_form_user_register_form_alter(&$form, &$form_state, $form_id) {
+  $form['account']['pass']['#description'] = t('To change the current user password, enter the new password in both fields. Please do not use common passwords like "password", "12345", "love".');
+  $form['#validate'][] = 'demo_falter_validate_password';
+  // dpm($form);
+}
+
+/*
+ * Custom password validation rules.
+ */
+function demo_falter_validate_password($form, &$form_state) {
+  $badpasswords = array('password', '12345', 'love');
+if(in_array($form_state['values']['pass'], $badpasswords)) {
+  form_set_error('pass', t('Please use a more secure password.'));
+}
+krumo($form_state);
+}
