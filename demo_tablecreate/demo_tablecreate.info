@@ -1,0 +1,3 @@
+name = Demo Table Creation
+description = demo module for practicing creating db tables.
+core = 7.x

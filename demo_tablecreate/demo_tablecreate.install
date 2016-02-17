@@ -1,0 +1,43 @@
+<?php
+/*
+ * Implement hook_schema().
+ */
+function demo_tablecreate_schema() {
+  $schema = array();
+  $schema['demo_tablecreate'] = array(
+    'description' => 'Information about node views.',
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The node's {node}.nid.",
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The user's {uid}.uid.",
+      ),
+      'view_count' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Simple node view counter per user.',
+      ),
+    ),
+    'primary key' => array('nid', 'uid'),
+  );
+
+  return $schema;
+}
+
+/*
+ * Implements hook_update_N().
+ */
+function demo_tablecreate_update_7000() {
+  drupal_install_schema(demo_tablecreate);
+}
