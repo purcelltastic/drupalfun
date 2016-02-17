@@ -3,12 +3,27 @@
 /**
  * Implements hook_node_view().
  */
-function demo2_node_view($node, $view_mode = 'full') {
+function demo_tablecreate_node_view($node, $view_mode = 'full') {
   //only when looking at the full version, NOT the teaser
   if ($view_mode == 'full') {
 
+    global $user;
+
     // Everytime a node is viewed, increment the node_views count
-    // in the user's session by one and include the result in the node content
+    // in the demo_tablecreate table by one and include the result in the node content
+
+    // Get record.
+    $record = demo_tablecreate_get_record($node->nid, $user->uid);
+    krumo($record);
+    //if no record, create one that we can insert later
+    if ($record === FALSE) {
+      $record = new StdClass();
+      $record->nid = $node->nid;
+      $record->uid = $user->uid;
+      $record->view_count = 0;
+    }
+
+
 
     //make sure there is a record in the session
     if (empty($_SESSION['node_views'][$node->nid])) {
@@ -33,4 +48,46 @@ function demo2_node_view($node, $view_mode = 'full') {
       '#weight' => 10,
     );
   }
+}
+
+/*
+ * Get the record.
+ *
+ * @param int $nid
+ *        The node id.
+ * @param int $uid
+ *        The user id.
+ * @return mixed
+ *         The stdClass record, or FALSE if no record exists.
+ */
+function demo_tablecreate_get_record($nid, $uid) {
+  //Select view_count from demo_tablecreate where nid = $nid and uid =  $uid
+  $query = db_select('demo_tablecreate', 'demodb')
+    ->fields('demodb', array('nid', 'uid', 'view_count'))
+    ->condition('nid', $nid)
+    ->condition('uid', $uid);
+  $record =  $query->execute()->fetch();
+  return $record;
+}
+
+/*
+ * Save a record.
+ *
+ * @param stdClass $record
+ *        The record to save.
+ */
+function demo_tablecreate_set_record($record) {
+//sanity check
+if (!is_object($record)) {
+  return watchdog('demo_tablecreate', 'We could not update information about node views.', array(), WATCHDOG_ERROR);
+}
+
+// insert/update into demo_tablecreate ('nid', 'uid', 'node_views') values ('nid', 'uid', 'node_views')
+$query = db_merge('demo_tablecreate')
+  ->key(array('nid' => $record->nid))
+  ->key(array('uid' => $record->uid))
+  ->fields((array) $record);
+  $query->execute();
+
+
 }
