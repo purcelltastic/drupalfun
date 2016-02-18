@@ -28,6 +28,13 @@ function demo_tablecreate_schema() {
         'default' => 0,
         'description' => 'Simple node view counter per user.',
       ),
+      'last_viewed' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The last viewed date (timestamp).',
+      ),
     ),
     'primary key' => array('nid', 'uid'),
   );
@@ -40,4 +47,20 @@ function demo_tablecreate_schema() {
  */
 function demo_tablecreate_update_7000() {
   drupal_install_schema(demo_tablecreate);
+}
+
+/*
+ * Implements hook_update_N().
+ *
+ * Add the "last viewed date" field.
+ */
+function demo_tablecreate_update_7001() {
+  $field = array(
+    'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => "The last viewed date (timestamp).",
+  );
+  db_add_field('demo_tablecreate', 'last_viewed', $field);
 }
