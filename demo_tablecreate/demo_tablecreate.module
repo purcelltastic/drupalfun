@@ -14,7 +14,6 @@ function demo_tablecreate_node_view($node, $view_mode = 'full') {
 
     // Get record.
     $record = demo_tablecreate_get_record($node->nid, $user->uid);
-    krumo($record);
     //if no record, create one that we can insert later
     if ($record === FALSE) {
       $record = new StdClass();
@@ -23,24 +22,16 @@ function demo_tablecreate_node_view($node, $view_mode = 'full') {
       $record->view_count = 0;
     }
 
+    // Increment view_count by 1
+    $record->view_count++;
 
-
-    //make sure there is a record in the session
-    if (empty($_SESSION['node_views'][$node->nid])) {
-      $_SESSION['node_views'][$node->nid] = 0;
-    }
-
-    #krumo('Before: '.$_SESSION['node_views'][$node->nid]);
-
-    //add another to the session
-    $_SESSION['node_views'][$node->nid]++;
-
-    #krumo('After: '.$_SESSION['node_views'][$node->nid]);
-
+    // Set the record.
+    demo_tablecreate_set_record($record);
+    krumo($record);
 
     // Set up an array of placeholders to pass to t().
     $t_args = array(
-      '%num' => $_SESSION['node_views'][$node->nid],
+      '%num' => $record->view_count,
     );
 
     $node->content['node_views'] = array(
