@@ -22,6 +22,12 @@ function ramp_video_csv_generate() {
 
 function ramp_video_csv_query() {
   $query = db_select('node', 'n')
-    ->fields
-  $query->join('node', 'n', 'n.nid = field_data_field_wonderbar_video_id.entity_id');
+    ->fields('n', array('title'))
+    ->fields('fw', array('field_wonderbar_video_id_value'))
+    ->fields('fua', array('alias'));
+  $query->join('field_data_field_wonderbar_video_id', 'fw', 'n.nid = fw.entity_id');
+  $query->join('fitpregnancy.url_alias', 'fua', 'concat("node/", fw.entity_id = fua.source');
+
+  $result = $query->execute()->fetchObject();
+
 }
