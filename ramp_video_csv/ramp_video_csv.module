@@ -1,0 +1,27 @@
+<?php
+/*
+ * Implements hook_menu().
+ */
+function ramp_video_csv_menu() {
+  $items = array();
+
+  $items['ramp-vidstory-csv'] = array(
+    'title' => 'CSV of video IDs, titles, and URLs',
+    'description' => t('CSV of video IDs, titles, and URLs for ramp.'),
+    'page callback' => 'ramp_video_csv_generate',
+    'access arguments' => array('administer content'),
+  );
+
+  return $items;
+}
+
+function ramp_video_csv_generate() {
+
+  $results = ramp_video_csv_query();
+}
+
+function ramp_video_csv_query() {
+  $query = db_select('node', 'n')
+    ->fields
+  $query->join('node', 'n', 'n.nid = field_data_field_wonderbar_video_id.entity_id');
+}

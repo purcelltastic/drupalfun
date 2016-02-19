@@ -1,0 +1,3 @@
+name = Ramp Video CSV Generator
+description = Generates a csv of ramp video URLs, titles, and video IDs for ramp to import.
+core = 7.x
