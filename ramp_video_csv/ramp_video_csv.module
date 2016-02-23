@@ -2,32 +2,47 @@
 /*
  * Implements hook_menu().
  */
-function ramp_video_csv_menu() {
+function fpg_ramp_video_csv_menu() {
   $items = array();
 
   $items['ramp-vidstory-csv'] = array(
     'title' => 'CSV of video IDs, titles, and URLs',
     'description' => t('CSV of video IDs, titles, and URLs for ramp.'),
-    'page callback' => 'ramp_video_csv_generate',
+    'page callback' => 'fpg_ramp_video_csv_generate',
     'access arguments' => array('administer content'),
   );
-
   return $items;
 }
 
-function ramp_video_csv_generate() {
+function fpg_ramp_video_csv_generate() {
 
-  $results = ramp_video_csv_query();
+  $results = fpg_ramp_video_csv_query();
 }
 
-function ramp_video_csv_query() {
-  $query = db_select('node', 'n')
-    ->fields('n', array('title'))
-    ->fields('fw', array('field_wonderbar_video_id_value'))
-    ->fields('fua', array('alias'));
-  $query->join('field_data_field_wonderbar_video_id', 'fw', 'n.nid = fw.entity_id');
-  $query->join('fitpregnancy.url_alias', 'fua', 'concat("node/", fw.entity_id = fua.source');
+function fpg_ramp_video_csv_query() {
+  $ramp_vid_query = db_select('node', 'n');
+  $ramp_vid_query->innerJoin('field_data_field_wonderbar_video_id', 'fw', 'n.nid = fw.entity_id');
+  $ramp_vid_query->innerjoin('url_alias', 'ua', "ua.source = CONCAT('node/', fw.entity_id)");
+  $ramp_vid_query->addField('n', 'title');
+  $ramp_vid_query->addField('fw', 'field_wonderbar_video_id_value');
+  $ramp_vid_query->addField('ua', 'alias');
 
-  $result = $query->execute()->fetchObject();
+  $ramp_vid_result = $ramp_vid_query->execute();
+  $ramp_vid_fetch = $ramp_vid_result->fetchAll(PDO::FETCH_ASSOC);
+
+  // output headers so that the file is downloaded rather than displayed
+  drupal_add_http_header('Content-Type', 'text/csv; utf-8');
+  drupal_add_http_header('Content-Disposition: attachment; filename=data.csv');
+
+  // create a file pointer connected to the output stream
+  $output = fopen('php://output', 'w');
+
+  // output the column headings
+  fputcsv($output, array('title', 'field_wonderbar_video_id_value', 'alias'));
+  for ($i = 0; $i < count($ramp_vid_fetch); $i++ ) {
+    $array_line = array($ramp_vid_fetch[$i]['title'], $ramp_vid_fetch[$i]['field_wonderbar_video_id_value'], $ramp_vid_fetch[$i]['alias']);
+    fputcsv($output, $array_line);
+  }
+  fclose($output);
 
 }
